@@ -1,7 +1,7 @@
 import HtmlWebpackPlugin from "html-webpack-plugin";
-import * as path from "node:path";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
-import * as webpack from "webpack";
+import webpack from "webpack";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
