@@ -4,6 +4,7 @@ export default class State extends Container {
 	graphics: Graphics;
 	size: number;
 	margin: number;
+  index: number;
 
 	constructor(x: number, y: number, size: number, margin: number) {
 		super();
