@@ -5,7 +5,16 @@ import State from "./util/state";
 
 const TRAVEL = 10;
 const SCALE = 0.025;
-const DEFAULT_SIZE = 300;
+const DEFAULT_SIZE = 500;
+
+
+window.addEventListener('wheel', event => {
+   const { ctrlKey } = event
+   if (ctrlKey) {
+      event.preventDefault();
+      return
+   }
+}, { passive: false })
 
 let heldkeys: string[] = [];
 
@@ -48,10 +57,10 @@ function updateInput(tree: Container, time: Ticker) {
 				tree.x += moveSpeed;
 				break;
 			case "q":
-				newScale = Math.max(oldScale - scaleSpeed, 0.5);
+				newScale = Math.max(oldScale - scaleSpeed, 0.2);
 				break;
 			case "e":
-				newScale = Math.min(oldScale + scaleSpeed, 2);
+				newScale = Math.min(oldScale + scaleSpeed, 1.2);
 				break;
 		}
 
@@ -80,7 +89,13 @@ function updateInput(tree: Container, time: Ticker) {
 	let tree = new Container();
 	app.stage.addChild(tree);
 
-	tree.addChild(new State(0, 0, DEFAULT_SIZE, DEFAULT_SIZE / 3));
+	tree.addChild(
+		new State(0, 0, DEFAULT_SIZE, DEFAULT_SIZE / 3, {
+			leftA: 0,
+			rightA: 0,
+			upA: 0,
+		}),
+	);
 
 	tree.position.set(window.innerWidth / 2, window.innerHeight / 2);
 
