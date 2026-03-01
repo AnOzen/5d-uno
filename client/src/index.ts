@@ -7,14 +7,17 @@ const TRAVEL = 10;
 const SCALE = 0.025;
 const DEFAULT_SIZE = 500;
 
-
-window.addEventListener('wheel', event => {
-   const { ctrlKey } = event
-   if (ctrlKey) {
-      event.preventDefault();
-      return
-   }
-}, { passive: false })
+window.addEventListener(
+	"wheel",
+	(event) => {
+		const { ctrlKey } = event;
+		if (ctrlKey) {
+			event.preventDefault();
+			return;
+		}
+	},
+	{ passive: false },
+);
 
 let heldkeys: string[] = [];
 
@@ -91,9 +94,9 @@ function updateInput(tree: Container, time: Ticker) {
 
 	tree.addChild(
 		new State(0, 0, DEFAULT_SIZE, DEFAULT_SIZE / 3, {
-			leftA: 0,
-			rightA: 0,
-			upA: 0,
+			leftA: 4,
+			rightA: 5,
+			upA: 7,
 		}),
 	);
 
