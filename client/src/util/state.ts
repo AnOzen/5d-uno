@@ -1,4 +1,4 @@
-import { Container, Graphics, Rectangle, Size, trimRight } from "pixi.js";
+import { Container, Graphics, Point } from "pixi.js";
 import Meta from "./meta";
 import Card from "./card";
 
@@ -25,28 +25,50 @@ export default class State extends Container {
 			let card = new Card(0);
 
 			card.rotation = Math.PI / 2;
-			card.position.set(50, (800 / (meta.leftA + 1)) * i + 100);
+			card.position.set(20, (800 / (meta.leftA + 1)) * i + 100);
+
 			this.addChild(card);
 		}
 
-    for (let i = 1; i <= meta.rightA; i++) {
+		for (let i = 1; i <= meta.rightA; i++) {
 			let card = new Card(0);
 
-			card.rotation = 3 * Math.PI / 2;
-			card.position.set(950, (800 / (meta.rightA + 1)) * i + 100);
+			card.rotation = (3 * Math.PI) / 2;
+			card.position.set(980, (800 / (meta.rightA + 1)) * i + 100);
 			this.addChild(card);
 		}
 
-    for (let i = 1; i <= meta.upA; i++) {
+		for (let i = 1; i <= meta.upA; i++) {
 			let card = new Card(0);
 
 			card.rotation = Math.PI;
-			card.position.set((800 / (meta.upA + 1)) * i + 100, 50);
+			card.position.set((800 / (meta.upA + 1)) * i + 100, 20);
 			this.addChild(card);
 		}
 
-    this.setSize(size);
+		for (let i = 1; i <= meta.hand.length; i++) {
+			let card = new Card(meta.hand[i - 1]);
 
+			card.position.set((800 / (meta.hand.length + 1)) * i + 100, 980);
+
+			card.eventMode = "static";
+			card.on("pointerenter", () => {
+				console.log("pointerenter");
+				card.y -= 50;
+			});
+			card.on("pointerleave", () => {
+				console.log("pointerleave");
+				card.y += 50;
+			});
+			this.addChild(card);
+		}
+
+		let macard = new Card(meta.middle);
+		macard.position.set(this.width / 2, this.height / 2);
+		macard.scale.set(macard.scale._x + 0.1);
+		this.addChild(macard);
+
+		this.setSize(size);
 		this.pos(x, y);
 	}
 

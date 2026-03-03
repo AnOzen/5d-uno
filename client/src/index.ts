@@ -1,6 +1,6 @@
 // TODO: Pixi Client
 
-import { Application, Container, Point, Rectangle, Ticker } from "pixi.js";
+import { Application, Container, Ticker } from "pixi.js";
 import State from "./util/state";
 
 const TRAVEL = 10;
@@ -97,6 +97,8 @@ function updateInput(tree: Container, time: Ticker) {
 			leftA: 4,
 			rightA: 5,
 			upA: 7,
+			hand: [15, 3, 9, 10, 23],
+			middle: 42,
 		}),
 	);
 
