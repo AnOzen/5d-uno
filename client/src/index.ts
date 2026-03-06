@@ -2,10 +2,26 @@
 
 import { Application, Container, Ticker } from "pixi.js";
 import State from "./util/state";
+import Card from "./util/card";
 
 const TRAVEL = 10;
 const SCALE = 0.025;
 const DEFAULT_SIZE = 500;
+
+let CHOSEN: [[number, number], Card] = [[0, 0], new Card(0)];
+let states: State[] = [];
+
+export function setChosen(coords: [number, number], card: Card) {
+	console.log("New Card! ", card.type);
+	console.log(states);
+	CHOSEN = [coords, card];
+	states.forEach((state) => {
+		console.log(coords, state.coords);
+		if (state.coords == coords) {
+			state.chooseCard(card.type);
+		}
+	});
+}
 
 window.addEventListener(
 	"wheel",
@@ -92,15 +108,17 @@ function updateInput(tree: Container, time: Ticker) {
 	let tree = new Container();
 	app.stage.addChild(tree);
 
-	tree.addChild(
-		new State(0, 0, DEFAULT_SIZE, DEFAULT_SIZE / 3, {
-			leftA: 4,
-			rightA: 5,
-			upA: 7,
-			hand: [15, 3, 9, 10, 23],
-			middle: 42,
-		}),
-	);
+	let root = new State(0, 0, DEFAULT_SIZE, DEFAULT_SIZE / 3, {
+		leftA: 4,
+		rightA: 5,
+		upA: 7,
+		hand: [15, 3, 9, 10, 23],
+		middle: 42,
+	});
+
+	tree.addChild(root);
+
+	states.push(root);
 
 	tree.position.set(window.innerWidth / 2, window.innerHeight / 2);
 

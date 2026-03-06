@@ -1,6 +1,8 @@
 import { Container, Graphics, Point } from "pixi.js";
 import Meta from "./meta";
 import Card from "./card";
+import { setChosen } from "..";
+import { TupleType } from "typescript";
 
 export default class State extends Container {
 	graphics: Graphics;
@@ -8,6 +10,9 @@ export default class State extends Container {
 	margin: number;
 	index: number;
 	meta: Meta;
+	hand: Card[] = [];
+	chosen: Graphics;
+	coords: [number, number];
 
 	constructor(x: number, y: number, size: number, margin: number, meta: Meta) {
 		super();
@@ -15,6 +20,7 @@ export default class State extends Container {
 		this.size = size;
 		this.margin = margin;
 		this.meta = meta;
+		this.coords = [x, y];
 		let mask = new Graphics().rect(0, 0, 1000, 1000).fill("white");
 		this.mask = mask;
 		this.addChild(mask);
@@ -53,14 +59,19 @@ export default class State extends Container {
 
 			card.eventMode = "static";
 			card.on("pointerenter", () => {
-				console.log("pointerenter");
+				if(!card.chosen)
 				card.y -= 50;
 			});
 			card.on("pointerleave", () => {
-				console.log("pointerleave");
+				if(!card.chosen)
 				card.y += 50;
 			});
+
+			card.on("pointertap", () => {
+				setChosen(this.coords, card);
+			});
 			this.addChild(card);
+			this.hand.push(card);
 		}
 
 		let macard = new Card(meta.middle);
@@ -78,4 +89,16 @@ export default class State extends Container {
 			y * (this.size + this.margin),
 		);
 	}
+
+	chooseCard(type: number) {
+		this.hand.forEach((card) => {
+			if (card.type == type){
+				card.chosen = !card.chosen;
+			} else {
+				card.chosen = false;
+				if(card.y == 930) card.y += 50;
+			}
+		})
+	}
+
 }
