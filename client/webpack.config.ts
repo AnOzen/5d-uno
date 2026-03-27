@@ -34,7 +34,8 @@ const config: webpack.Configuration = {
 		path: path.resolve(__dirname, "build"),
 		clean: true,
 	},
-	mode: "production",
+	mode: "development",
+	devtool: "source-map",
 };
 
 export default config;

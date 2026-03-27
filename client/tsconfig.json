@@ -6,7 +6,11 @@
 		"target": "esnext",
 		"jsx": "react",
 		"allowJs": false,
-		"moduleResolution": "node",
-		"esModuleInterop": true
+		"moduleResolution": "bundler",
+		"esModuleInterop": true,
+		"strictNullChecks": false,
+		"types": ["node"],
+		"rewriteRelativeImportExtensions": true,
+		"allowImportingTsExtensions": true
 	}
 }

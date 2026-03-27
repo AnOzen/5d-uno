@@ -1,5 +1,4 @@
 import { Container, Graphics } from "pixi.js";
-import { TupleType } from "typescript";
 
 export default class Card extends Container {
 	type: number;
