@@ -12,8 +12,11 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@pixi-essentials/svg": "^3.0.0",
 		"html-webpack-plugin": "^5.6.6",
+		"pixi-svg": "^3.2.0",
 		"pixi.js": "^8.16.0",
+		"svg-inline-loader": "^0.8.2",
 		"ts-loader": "^9.5.4",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.9.3",

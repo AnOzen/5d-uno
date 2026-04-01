@@ -1,9 +1,10 @@
 // TODO: Pixi Client
 
-import { Application, Container, Ticker } from "pixi.js";
+import { Application, Assets, Container, Ticker } from "pixi.js";
 import State from "./util/state";
 import Card from "./util/card";
 import Meta from "./util/meta";
+import back from "./uno_back.svg";
 
 const TRAVEL = 10;
 const SCALE = 0.025;
@@ -14,6 +15,8 @@ let states: State[] = [];
 export let TURN = 0;
 
 let tree = new Container();
+
+export const cardsvg = await Assets.load(back);
 
 export function setChosen(coords: [number, number], card: Card, index: number) {
 	CHOSEN = [coords, card, index];
@@ -208,6 +211,7 @@ function updateInput(tree: Container, time: Ticker) {
 		resolution: 1,
 		preference: "webgl",
 		antialias: true,
+		autoDensity: true,
 	});
 
 	document.body.appendChild(app.canvas);

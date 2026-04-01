@@ -16,13 +16,13 @@ const config: webpack.Configuration = {
 				exclude: /node_modules/,
 			},
 			{
-				test: /\.(woff|woff2|eot|ttf|otf)$/i,
-				type: "asset/resource",
+				test: /\.svg$/,
+				type: 'asset/resource'
 			},
 		],
 	},
 	resolve: {
-		extensions: [".tsx", ".ts", ".js"],
+		extensions: [".tsx", ".ts", ".js", ".svg"],
 	},
 	plugins: [
 		new HtmlWebpackPlugin({

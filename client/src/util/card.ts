@@ -1,4 +1,5 @@
-import { Container, Graphics } from "pixi.js";
+import { Container, Graphics, GraphicsContext, Sprite } from "pixi.js";
+import { cardsvg } from "..";
 
 export default class Card extends Container {
 	type: number;
@@ -8,12 +9,9 @@ export default class Card extends Container {
 		super();
 		this.type = t;
 		this.chosen = false;
-		this.addChild(
-			new Graphics().rect(0, 0, 1000, 1462).fill({
-				color: this.getColor(t),
-			}),
-		);
-		this.addChild(new Graphics().rect(0, 0, 1000, 500).fill("black"));
+
+		this.addChild(new Sprite(cardsvg));
+
 		this.pivot.set(this.width / 2, this.height / 2);
 
 		this.setSize(125, 183);
