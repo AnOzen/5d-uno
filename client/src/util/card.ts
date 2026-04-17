@@ -1,5 +1,6 @@
 import { Container, Graphics, GraphicsContext, Sprite } from "pixi.js";
-import { cardsvg } from "..";
+import { CARDS } from "../game";
+import { ATLAS } from "./atlas";
 
 export default class Card extends Container {
 	type: number;
@@ -10,7 +11,10 @@ export default class Card extends Container {
 		this.type = t;
 		this.chosen = false;
 
-		this.addChild(new Sprite(cardsvg));
+		let plo;
+		if(t == 0) plo = 0; else plo = t;
+		let car = new Sprite(CARDS[ATLAS[plo]]);
+		this.addChild(car);
 
 		this.pivot.set(this.width / 2, this.height / 2);
 

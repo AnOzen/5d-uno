@@ -16,6 +16,6 @@
 	},
 	"include": [
 		"src/**/*.ts",
-		"src/svg.d.ts"
+		"src/assets.d.ts"
 	]
 }

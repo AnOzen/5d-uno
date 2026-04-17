@@ -1,7 +1,7 @@
-import { Container, Graphics } from "pixi.js";
+import { Container, Graphics, Text } from "pixi.js";
 import Meta from "./meta";
 import Card from "./card";
-import { makePlay, setChosen, TURN } from "..";
+import { makePlay, setChosen, TURN } from "../game";
 
 export default class State extends Container {
 	graphics: Graphics;
@@ -12,6 +12,7 @@ export default class State extends Container {
 	hand: Card[] = [];
 	chosen: Graphics;
 	coords: [number, number];
+	ptxts: Text[];
 
 	constructor(x: number, y: number, size: number, margin: number, meta: Meta) {
 		super();
@@ -35,6 +36,19 @@ export default class State extends Container {
 			this.addChild(card);
 		}
 
+		const text = new Text({
+			text: meta.leftName,
+			style: {
+				fill: "#000000",
+				fontSize: 60,
+				fontFamily: "Arimo",
+			},
+			anchor: 0.5,
+		});
+		text.rotation = Math.PI / 2;
+		text.position.set(150, this.height / 2);
+		this.addChild(text);
+
 		for (let i = 1; i <= meta.rightA; i++) {
 			let card = new Card(0);
 
@@ -42,6 +56,19 @@ export default class State extends Container {
 			card.position.set(980, (800 / (meta.rightA + 1)) * i + 100);
 			this.addChild(card);
 		}
+
+		const text2 = new Text({
+			text: meta.rightName,
+			style: {
+				fill: "#000000",
+				fontSize: 60,
+				fontFamily: "Arimo",
+			},
+			anchor: 0.5,
+		});
+		text2.rotation = (3 * Math.PI) / 2;
+		text2.position.set(850, this.height / 2);
+		this.addChild(text2);
 
 		for (let i = 1; i <= meta.upA; i++) {
 			let card = new Card(0);
@@ -51,9 +78,33 @@ export default class State extends Container {
 			this.addChild(card);
 		}
 
+		const text3 = new Text({
+			text: meta.upName,
+			style: {
+				fill: "#000000",
+				fontSize: 60,
+				fontFamily: "Arimo",
+			},
+			anchor: 0.5,
+		});
+		text3.position.set(this.width / 2, 150);
+		this.addChild(text3);
+
+		const text4 = new Text({
+			text: meta.yourName,
+			style: {
+				fill: "#000000",
+				fontSize: 60,
+				fontFamily: "Arimo",
+			},
+			anchor: 0.5,
+		});
+		text4.position.set(this.width / 2, 850);
+		this.addChild(text4);
+
 		for (let i = 1; i <= meta.hand.length; i++) {
 			let card = new Card(meta.hand[i - 1]);
-			card.cursor = 'pointer';
+			card.cursor = "pointer";
 
 			card.position.set((800 / (meta.hand.length + 1)) * i + 100, 980);
 
@@ -72,18 +123,38 @@ export default class State extends Container {
 			this.hand.push(card);
 		}
 
-		let macard = new Card(meta.middle);
-		macard.cursor = 'pointer';
-		macard.position.set(this.width / 2, this.height / 2);
-		macard.scale.set(macard.scale._x + 0.1);
+		this.ptxts = [text4, text, text3, text2];
+		this.ptxts[x % 4].style.fill = "#ff0000";
+		this.ptxts[x % 4].style.stroke = {
+			width: 7,
+			color: "#ffffff",
+			alignment: 0,
+			join: "round",
+		};
 
-		macard.eventMode = 'static';
-		macard.on('pointertap', () => {
-			makePlay(this.coords, macard);
-		})
+		let macard = new Card(meta.middle);
 		this.addChild(macard);
 
-		
+		macard.cursor = "pointer";
+		macard.position.set((2 * this.width) / 3, this.height / 2);
+		macard.scale.set(macard.scale._x + 0.1);
+
+		macard.eventMode = "static";
+		macard.on("pointertap", () => {
+			makePlay(this.coords, macard, false);
+		});
+
+		let drawpile = new Card(0);
+		this.addChild(drawpile);
+
+		drawpile.cursor = "pointer";
+		drawpile.position.set(this.width / 3, this.height / 2);
+		drawpile.scale.set(drawpile.scale._x + 0.1);
+
+		drawpile.eventMode = "static";
+		drawpile.on("pointertap", () => {
+			makePlay(this.coords, drawpile, true);
+		});
 
 		this.setSize(size);
 		this.pos(x, y);
@@ -109,11 +180,9 @@ export default class State extends Container {
 
 	setTurn(turn: boolean) {
 		if (turn) {
-			this.children[0] = this.graphics
-				.rect(0, 0, 1000, 1000)
-				.fill({
-					color: 0xdddddd
-				})
+			this.children[0] = this.graphics.rect(0, 0, 1000, 1000).fill({
+				color: 0xdddddd,
+			});
 		} else {
 			this.children[0] = this.graphics.rect(0, 0, 1000, 1000).fill("grey");
 		}

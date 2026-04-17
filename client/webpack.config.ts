@@ -16,9 +16,13 @@ const config: webpack.Configuration = {
 				exclude: /node_modules/,
 			},
 			{
-				test: /\.svg$/,
+				test: /\.png$/,
 				type: 'asset/resource'
 			},
+			{
+				test: /\.ttf$/,
+				type: 'asset/resource'
+			}
 		],
 	},
 	resolve: {
