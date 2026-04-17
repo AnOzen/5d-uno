@@ -27,6 +27,8 @@ export default class State extends Container {
 		this.addChild(this.graphics.rect(0, 0, 1000, 1000).fill("grey"));
 		this.addChild(mask);
 
+		this.ptxts = [];
+
 		for (let i = 1; i <= meta.leftA; i++) {
 			let card = new Card(0);
 
@@ -124,8 +126,9 @@ export default class State extends Container {
 		}
 
 		this.ptxts = [text4, text, text3, text2];
-		this.ptxts[x % 4].style.fill = "#ff0000";
-		this.ptxts[x % 4].style.stroke = {
+		this.ptxts = this.ptxts.filter((text) => !(text.text.length == 0));
+		this.ptxts[x % this.ptxts.length].style.fill = "#ff0000";
+		this.ptxts[x % this.ptxts.length].style.stroke = {
 			width: 7,
 			color: "#ffffff",
 			alignment: 0,

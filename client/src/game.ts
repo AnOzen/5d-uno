@@ -1,15 +1,14 @@
 // TODO: Pixi Client
 
 import { Assets, Container, Graphics, Text, Texture, Ticker } from "pixi.js";
-import { Button, ButtonContainer, Input, List } from "@pixi/ui";
+import { ButtonContainer, Input, List } from "@pixi/ui";
 import State from "./util/state";
 import Card from "./util/card";
 import { ATLAS } from "./util/atlas";
 import TTF from "./res/font.ttf";
 import { APP } from "./index";
 import "@pixi/layout";
-import { Layout } from "@pixi/layout";
-import { fileURLToPath } from "node:url";
+import { appendFile } from "node:fs";
 
 const TRAVEL = 10;
 const SCALE = 0.025;
@@ -20,6 +19,7 @@ let keyspressed: string[] = [];
 let CHOSEN: [[number, number], Card, number] = [[0, 0], null, -1];
 let states: State[] = [];
 let USER: string;
+let GAME: string;
 export let TURN = 0;
 let players = ["AnOzen1", "harharhar", "goonbeanicecream", "BEDWARSYOSHI"];
 
@@ -243,8 +243,8 @@ function updateInput(tree: Container, time: Ticker) {
 	let oldScale = tree.scale.x;
 
 	const worldPos = {
-		x: (window.innerWidth / 2 - tree.x) / oldScale,
-		y: (window.innerHeight / 2 - tree.y) / oldScale,
+		x: (APP.screen.width / 2 - tree.x) / oldScale,
+		y: (APP.screen.height / 2 - tree.y) / oldScale,
 	};
 
 	let newScale = oldScale;
@@ -280,8 +280,75 @@ function updateInput(tree: Container, time: Ticker) {
 	});
 }
 
+let names: List;
+
+function updateNames(namel: string[]) {
+	names.removeChildren();
+	for (let name of namel) {
+		names.addChild(
+			new Text({
+				text: name,
+				style: {
+					fontFamily: "Arimo",
+					fontSize: 30,
+				},
+			}),
+		);
+	}
+}
+
+function lobby() {
+	APP.stage.removeChildren();
+
+	let players = new Container();
+	players.addChild(
+		new Graphics().rect(0, 0, 300, 500).fill(0x789abc).stroke({
+			width: 5,
+			color: 0xdddddd,
+			alignment: 1,
+		}),
+	);
+	names = new List({
+		maxWidth: 300,
+		maxHeight: 500,
+		type: "vertical",
+		elementsMargin: 10,
+		padding: 20,
+	});
+	players.addChild(names);
+
+	players.pivot.set(players.width / 2, players.height / 2);
+	players.position.set(APP.screen.width / 2, APP.screen.height / 2);
+
+	APP.stage.addChild(players);
+
+	let start = new ButtonContainer();
+	start.addChild(
+		new Graphics().rect(0, 0, 200, 75).fill(0xff0000).stroke({
+			width: 5,
+			color: 0xdddddd,
+			alignment: 1,
+		}),
+	);
+	let t = new Text({
+		text: "Ready",
+		style: {
+			fontFamily: "Arimo",
+			fontSize: 30,
+		},
+	});
+	t.pivot.set(t.width / 2, t.height / 2);
+	t.position.set(start.width / 2, start.height / 2);
+	start.addChild(t);
+
+	start.position.set(APP.screen.width / 2, (5 * APP.screen.height) / 6);
+	start.pivot.set(start.width / 2, start.height / 2);
+
+	APP.stage.addChild(start);
+}
+
 function createGame() {
-	APP.stage.children = [];
+	APP.stage.removeChildren();
 
 	APP.stage.addChild(tree);
 
@@ -303,7 +370,7 @@ function createGame() {
 
 	setTurn(0);
 
-	tree.position.set(window.innerWidth / 2, window.innerHeight / 2);
+	tree.position.set(APP.screen.width / 2, APP.screen.height / 2);
 
 	tree.pivot.set(tree.width / 2, tree.height / 2);
 
@@ -311,6 +378,15 @@ function createGame() {
 		updateInput(tree, time);
 	});
 }
+
+server.onmessage = (data) => {
+	let resp = JSON.parse(data.data);
+	console.log(resp);
+	switch (resp["resp"]) {
+		case "listplayers":
+			updateNames(resp["players"]);
+	}
+};
 
 export async function init() {
 	let form = new Container();
@@ -371,10 +447,11 @@ export async function init() {
 
 	join.onPress.connect(() => {
 		USER = user.value;
+		GAME = game.value;
 		server.send(
 			JSON.stringify({ req: "gamejoin", username: USER, game: "test" }),
 		);
-		createGame();
+		lobby();
 	});
 
 	form.addChild(join);

@@ -1,3 +1,8 @@
+import json
+
+from websockets import ServerConnection
+
+
 class Game:
     def __init__(self) -> None:
         self.players: list[str] = []
@@ -16,3 +21,11 @@ class Game:
             return True
         except:
             return False
+    
+    def __str__(self) -> str:
+        return f"Game {{ players: {self.players} }}"
+    
+    async def broadcast_players(self, connections: dict[str,ServerConnection]):
+        for player in self.players:
+            await connections[player].send(json.dumps({"resp": "listplayers", "players": self.players}))
+
