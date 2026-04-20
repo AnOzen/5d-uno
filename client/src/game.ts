@@ -8,7 +8,6 @@ import { ATLAS } from "./util/atlas";
 import TTF from "./res/font.ttf";
 import { APP } from "./index";
 import "@pixi/layout";
-import { appendFile } from "node:fs";
 
 const TRAVEL = 10;
 const SCALE = 0.025;
@@ -21,7 +20,8 @@ let states: State[] = [];
 let USER: string;
 let GAME: string;
 export let TURN = 0;
-let players = ["AnOzen1", "harharhar", "goonbeanicecream", "BEDWARSYOSHI"];
+let players: string[] = [];
+export let offset: number;
 
 let tree = new Container();
 
@@ -112,10 +112,10 @@ export function makePlay(coords: [number, number], card: Card, draw: boolean) {
 				upA: 0,
 				middle: 0,
 				hand: [0],
-				yourName: "",
-				leftName: "",
-				rightName: "",
-				upName: "",
+				yourName: "1",
+				leftName: "2",
+				rightName: "3",
+				upName: "4",
 			}),
 		);
 		let y2 = findY(CHOSEN[0][0] + 1, CHOSEN[0][1]);
@@ -134,10 +134,10 @@ export function makePlay(coords: [number, number], card: Card, draw: boolean) {
 						rightA: tar.meta.rightA,
 						hand: hd,
 						middle: CHOSEN[1].type,
-						yourName: players[0],
-						leftName: players[1],
-						rightName: players[3],
-						upName: players[2],
+						yourName: players[offset % 4],
+						leftName: players[(offset + 1) % 4],
+						rightName: players[(offset + 3) % 4],
+						upName: players[(offset + 2) % 4],
 					},
 				);
 			} else {
@@ -153,10 +153,10 @@ export function makePlay(coords: [number, number], card: Card, draw: boolean) {
 						rightA: tar.meta.rightA,
 						hand: hd,
 						middle: CHOSEN[1].type,
-						yourName: players[0],
-						leftName: players[1],
-						rightName: players[3],
-						upName: players[2],
+						yourName: players[offset % 4],
+						leftName: players[(offset + 1) % 4],
+						rightName: players[(offset + 3) % 4],
+						upName: players[(offset + 2) % 4],
 					},
 				);
 			}
@@ -175,10 +175,10 @@ export function makePlay(coords: [number, number], card: Card, draw: boolean) {
 					upA: tar.meta.rightA,
 					hand: [...tar.meta.hand],
 					middle: CHOSEN[1].type,
-					yourName: players[0],
-					leftName: players[1],
-					rightName: players[3],
-					upName: players[2],
+					yourName: players[offset % 4],
+					leftName: players[(offset + 1) % 4],
+					rightName: players[(offset + 3) % 4],
+					upName: players[(offset + 2) % 4],
 				},
 			);
 
@@ -193,10 +193,10 @@ export function makePlay(coords: [number, number], card: Card, draw: boolean) {
 					rightA: ch.meta.rightA,
 					hand: hd,
 					middle: ch.meta.middle,
-					yourName: players[0],
-					leftName: players[1],
-					rightName: players[3],
-					upName: players[2],
+					yourName: players[offset % 4],
+					leftName: players[(offset + 1) % 4],
+					rightName: players[(offset + 3) % 4],
+					upName: players[(offset + 2) % 4],
 				},
 			);
 
@@ -295,13 +295,15 @@ function updateNames(namel: string[]) {
 			}),
 		);
 	}
+	players = namel;
+	offset = players.indexOf(USER);
 }
 
 function lobby() {
 	APP.stage.removeChildren();
 
-	let players = new Container();
-	players.addChild(
+	let plays = new Container();
+	plays.addChild(
 		new Graphics().rect(0, 0, 300, 500).fill(0x789abc).stroke({
 			width: 5,
 			color: 0xdddddd,
@@ -315,12 +317,12 @@ function lobby() {
 		elementsMargin: 10,
 		padding: 20,
 	});
-	players.addChild(names);
+	plays.addChild(names);
 
-	players.pivot.set(players.width / 2, players.height / 2);
-	players.position.set(APP.screen.width / 2, APP.screen.height / 2);
+	plays.pivot.set(plays.width / 2, plays.height / 2);
+	plays.position.set(APP.screen.width / 2, APP.screen.height / 2);
 
-	APP.stage.addChild(players);
+	APP.stage.addChild(plays);
 
 	let start = new ButtonContainer();
 	start.addChild(
@@ -341,6 +343,13 @@ function lobby() {
 	t.position.set(start.width / 2, start.height / 2);
 	start.addChild(t);
 
+	start.onPress.connect(() => {
+		if (players.length != 4) {
+			return;
+		}
+		createGame();
+	});
+
 	start.position.set(APP.screen.width / 2, (5 * APP.screen.height) / 6);
 	start.pivot.set(start.width / 2, start.height / 2);
 
@@ -358,10 +367,10 @@ function createGame() {
 		upA: 7,
 		hand: [1, 1, 1, 1, 1, 1, 1],
 		middle: 1,
-		yourName: USER,
-		leftName: players[1],
-		rightName: players[3],
-		upName: players[2],
+		yourName: players[offset % 4],
+		leftName: players[(offset + 1) % 4],
+		rightName: players[(offset + 3) % 4],
+		upName: players[(offset + 2) % 4],
 	});
 
 	tree.addChild(root);
@@ -446,10 +455,11 @@ export async function init() {
 	join.x = form.width / 2;
 
 	join.onPress.connect(() => {
+		if (user.value.trim() == "" || game.value.trim() == "") return;
 		USER = user.value;
 		GAME = game.value;
 		server.send(
-			JSON.stringify({ req: "gamejoin", username: USER, game: "test" }),
+			JSON.stringify({ req: "gamejoin", username: USER, game: GAME }),
 		);
 		lobby();
 	});

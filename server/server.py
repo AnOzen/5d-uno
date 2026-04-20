@@ -50,7 +50,7 @@ async def handle(client: ServerConnection):
                 if len(games[game].players) == 0:
                     games.pop(game)
             logging.info(f'"{user}" disconnected: "{e}"')
-    logging.debug(f'current games: {list(games.keys())}')
+    logging.info(f'current games: {list(games.keys())}')
 
 
 async def main():

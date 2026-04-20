@@ -1,7 +1,11 @@
 import { Container, Graphics, Text } from "pixi.js";
 import Meta from "./meta";
 import Card from "./card";
-import { makePlay, setChosen, TURN } from "../game";
+import { makePlay, offset, setChosen, TURN } from "../game";
+
+function mod(n: number, m: number): number {
+	return ((n % m) + m) % m;
+}
 
 export default class State extends Container {
 	graphics: Graphics;
@@ -127,8 +131,8 @@ export default class State extends Container {
 
 		this.ptxts = [text4, text, text3, text2];
 		this.ptxts = this.ptxts.filter((text) => !(text.text.length == 0));
-		this.ptxts[x % this.ptxts.length].style.fill = "#ff0000";
-		this.ptxts[x % this.ptxts.length].style.stroke = {
+		this.ptxts[mod(x - offset, this.ptxts.length)].style.fill = "#ff0000";
+		this.ptxts[mod(x - offset, this.ptxts.length)].style.stroke = {
 			width: 7,
 			color: "#ffffff",
 			alignment: 0,
