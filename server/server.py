@@ -34,6 +34,11 @@ async def handle(client: ServerConnection):
                     f"\"{message['username']}\" joined game \"{game}\": {games[game]}"
                 )
                 await games[game].broadcast_players(connections)
+            if message["req"] == "playerready":
+                game = message["game"]
+                games[game].set_ready(message["username"], message["ready"])
+                await games[game].broadcast_players(connections)
+
     except ConnectionClosed as e:
         user = None
         for na in connections:
@@ -50,7 +55,7 @@ async def handle(client: ServerConnection):
                 if len(games[game].players) == 0:
                     games.pop(game)
             logging.info(f'"{user}" disconnected: "{e}"')
-    logging.info(f'current games: {list(games.keys())}')
+    logging.info(f"current games: {list(games.keys())}")
 
 
 async def main():

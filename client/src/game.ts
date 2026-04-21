@@ -22,6 +22,7 @@ let GAME: string;
 export let TURN = 0;
 let players: string[] = [];
 export let offset: number;
+let ready: boolean = false;
 
 let tree = new Container();
 
@@ -282,15 +283,17 @@ function updateInput(tree: Container, time: Ticker) {
 
 let names: List;
 
-function updateNames(namel: string[]) {
+function updateNames(namel: string[], ready: boolean[]) {
 	names.removeChildren();
 	for (let name of namel) {
+		let r = ready[namel.indexOf(name)];
 		names.addChild(
 			new Text({
 				text: name,
 				style: {
 					fontFamily: "Arimo",
 					fontSize: 30,
+					fill: r ? "lightgreen" : "darkred",
 				},
 			}),
 		);
@@ -344,10 +347,67 @@ function lobby() {
 	start.addChild(t);
 
 	start.onPress.connect(() => {
-		if (players.length != 4) {
-			return;
+		if (!ready) {
+			start.removeChildAt(0);
+			start.addChildAt(
+				new Graphics().rect(0, 0, 200, 75).fill(0x00ff00).stroke({
+					width: 5,
+					color: 0xdddddd,
+					alignment: 1,
+				}),
+				0,
+			);
+			let pl = new Text({
+				text: "Unready",
+				style: {
+					fontFamily: "Arimo",
+					fontSize: 30,
+				},
+			});
+			pl.pivot.set(pl.width / 2, pl.height / 2);
+			pl.position.set(start.width / 2, start.height / 2);
+			start.removeChildAt(1);
+			start.addChildAt(pl, 1);
+			ready = true;
+			server.send(
+				JSON.stringify({
+					req: "playerready",
+					username: USER,
+					game: GAME,
+					ready: ready,
+				}),
+			);
+		} else {
+			start.removeChildAt(0);
+			start.addChildAt(
+				new Graphics().rect(0, 0, 200, 75).fill(0xff0000).stroke({
+					width: 5,
+					color: 0xdddddd,
+					alignment: 1,
+				}),
+				0,
+			);
+			let pl = new Text({
+				text: "Ready",
+				style: {
+					fontFamily: "Arimo",
+					fontSize: 30,
+				},
+			});
+			pl.pivot.set(pl.width / 2, pl.height / 2);
+			pl.position.set(start.width / 2, start.height / 2);
+			start.removeChildAt(1);
+			start.addChildAt(pl, 1);
+			ready = false;
+			server.send(
+				JSON.stringify({
+					req: "playerready",
+					username: USER,
+					game: GAME,
+					ready: ready,
+				}),
+			);
 		}
-		createGame();
 	});
 
 	start.position.set(APP.screen.width / 2, (5 * APP.screen.height) / 6);
@@ -393,7 +453,7 @@ server.onmessage = (data) => {
 	console.log(resp);
 	switch (resp["resp"]) {
 		case "listplayers":
-			updateNames(resp["players"]);
+			updateNames(resp["players"], resp["ready"]);
 	}
 };
 
