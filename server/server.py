@@ -38,6 +38,10 @@ async def handle(client: ServerConnection):
                 game = message["game"]
                 games[game].set_ready(message["username"], message["ready"])
                 await games[game].broadcast_players(connections)
+                if not False in games[game].ready and len(games[game].ready) == 4:
+                    games[game].init_state()
+                    await games[game].broadcast_start(connections)
+                    await games[game].broadcast_stateadd(connections, 0)
 
     except ConnectionClosed as e:
         user = None

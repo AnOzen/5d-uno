@@ -421,22 +421,6 @@ function createGame() {
 
 	APP.stage.addChild(tree);
 
-	let root = new State(0, 0, DEFAULT_SIZE, DEFAULT_SIZE / 3, {
-		leftA: 7,
-		rightA: 7,
-		upA: 7,
-		hand: [1, 1, 1, 1, 1, 1, 1],
-		middle: 1,
-		yourName: players[offset % 4],
-		leftName: players[(offset + 1) % 4],
-		rightName: players[(offset + 3) % 4],
-		upName: players[(offset + 2) % 4],
-	});
-
-	tree.addChild(root);
-
-	states.push(root);
-
 	setTurn(0);
 
 	tree.position.set(APP.screen.width / 2, APP.screen.height / 2);
@@ -448,12 +432,45 @@ function createGame() {
 	});
 }
 
+function addState(state: any){
+	let coords: number[] = state["coords"];
+	let hands: any = state["hands"];
+	let middle: number = state["middle"];
+
+	let st = new State(
+		coords[0],
+		coords[1],
+		DEFAULT_SIZE,
+		DEFAULT_SIZE / 3,
+		{
+			leftA: hands[players[(offset + 1) % 4]].length,
+			rightA: hands[players[(offset + 3) % 4]].length,
+			upA: hands[players[(offset + 2) % 4]].length,
+			hand: hands[players[offset % 4]],
+			middle: middle,
+			leftName: players[(offset + 1) % 4],
+			rightName: players[(offset + 3) % 4],
+			upName: players[(offset + 2) % 4],
+			yourName: players[offset % 4],
+		}
+	);
+	tree.addChild(st);
+	states.push(st);
+}
+
 server.onmessage = (data) => {
 	let resp = JSON.parse(data.data);
 	console.log(resp);
 	switch (resp["resp"]) {
 		case "listplayers":
 			updateNames(resp["players"], resp["ready"]);
+			break;
+		case "gamestart":
+			createGame();
+			break;
+		case "stateadd":
+			addState(resp["state"]);
+			break;
 	}
 };
 
