@@ -17,6 +17,7 @@ export default class State extends Container {
 	chosen: Graphics;
 	coords: [number, number];
 	ptxts: Text[];
+	turn: number;
 
 	constructor(x: number, y: number, size: number, margin: number, meta: Meta) {
 		super();
@@ -27,6 +28,7 @@ export default class State extends Container {
 		this.coords = [x, y];
 		let mask = new Graphics().rect(0, 0, 1000, 1000).fill("white");
 		this.mask = mask;
+		this.turn = meta.turn;
 
 		this.addChild(this.graphics.rect(0, 0, 1000, 1000).fill("grey"));
 		this.addChild(mask);
@@ -131,8 +133,8 @@ export default class State extends Container {
 
 		this.ptxts = [text4, text, text3, text2];
 		this.ptxts = this.ptxts.filter((text) => !(text.text.length == 0));
-		this.ptxts[mod(x - offset, this.ptxts.length)].style.fill = "#ff0000";
-		this.ptxts[mod(x - offset, this.ptxts.length)].style.stroke = {
+		this.ptxts[mod(meta.turn - offset, this.ptxts.length)].style.fill = "#ff0000";
+		this.ptxts[mod(meta.turn - offset, this.ptxts.length)].style.stroke = {
 			width: 7,
 			color: "#ffffff",
 			alignment: 0,

@@ -36,7 +36,7 @@ class Game:
             hands[player] = [1, 1, 1, 1, 1, 1, 1]  # TODO: fix this plz
 
         self.draws = self.create_draw()
-        self.states.append({"coords": (0, 0), "hands": hands, "middle": self.draws[0]})
+        self.states.append({"coords": (0, 0), "hands": hands, "middle": self.draws[0], "turn": 0})
 
     def create_draw(self):
         cards = [x for x in range(1, 7)] + [x for x in range(1, 7)]

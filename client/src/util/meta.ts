@@ -8,4 +8,5 @@ export default class Meta {
 	public rightName: string;
 	public upName: string;
 	public yourName: string;
+	public turn: number;
 }

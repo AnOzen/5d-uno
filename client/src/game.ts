@@ -117,6 +117,7 @@ export function makePlay(coords: [number, number], card: Card, draw: boolean) {
 				leftName: "2",
 				rightName: "3",
 				upName: "4",
+				turn: 0,
 			}),
 		);
 		let y2 = findY(CHOSEN[0][0] + 1, CHOSEN[0][1]);
@@ -139,6 +140,7 @@ export function makePlay(coords: [number, number], card: Card, draw: boolean) {
 						leftName: players[(offset + 1) % 4],
 						rightName: players[(offset + 3) % 4],
 						upName: players[(offset + 2) % 4],
+						turn: getState(coords).turn + 1,
 					},
 				);
 			} else {
@@ -158,6 +160,7 @@ export function makePlay(coords: [number, number], card: Card, draw: boolean) {
 						leftName: players[(offset + 1) % 4],
 						rightName: players[(offset + 3) % 4],
 						upName: players[(offset + 2) % 4],
+						turn: getState(coords).turn + 1,
 					},
 				);
 			}
@@ -180,6 +183,7 @@ export function makePlay(coords: [number, number], card: Card, draw: boolean) {
 					leftName: players[(offset + 1) % 4],
 					rightName: players[(offset + 3) % 4],
 					upName: players[(offset + 2) % 4],
+					turn: getState(coords).turn + 1,
 				},
 			);
 
@@ -198,6 +202,7 @@ export function makePlay(coords: [number, number], card: Card, draw: boolean) {
 					leftName: players[(offset + 1) % 4],
 					rightName: players[(offset + 3) % 4],
 					upName: players[(offset + 2) % 4],
+					turn: getState(CHOSEN[0]).turn + 1,
 				},
 			);
 
@@ -423,39 +428,37 @@ function createGame() {
 
 	setTurn(0);
 
-	tree.position.set(APP.screen.width / 2, APP.screen.height / 2);
-
-	tree.pivot.set(tree.width / 2, tree.height / 2);
-
 	APP.ticker.add((time) => {
 		updateInput(tree, time);
 	});
 }
 
-function addState(state: any){
+function addState(state: any) {
 	let coords: number[] = state["coords"];
 	let hands: any = state["hands"];
 	let middle: number = state["middle"];
+	let t = state["turn"];
 
-	let st = new State(
-		coords[0],
-		coords[1],
-		DEFAULT_SIZE,
-		DEFAULT_SIZE / 3,
-		{
-			leftA: hands[players[(offset + 1) % 4]].length,
-			rightA: hands[players[(offset + 3) % 4]].length,
-			upA: hands[players[(offset + 2) % 4]].length,
-			hand: hands[players[offset % 4]],
-			middle: middle,
-			leftName: players[(offset + 1) % 4],
-			rightName: players[(offset + 3) % 4],
-			upName: players[(offset + 2) % 4],
-			yourName: players[offset % 4],
-		}
-	);
+	let st = new State(coords[0], coords[1], DEFAULT_SIZE, DEFAULT_SIZE / 3, {
+		leftA: hands[players[(offset + 1) % 4]].length,
+		rightA: hands[players[(offset + 3) % 4]].length,
+		upA: hands[players[(offset + 2) % 4]].length,
+		hand: hands[players[offset % 4]],
+		middle: middle,
+		leftName: players[(offset + 1) % 4],
+		rightName: players[(offset + 3) % 4],
+		upName: players[(offset + 2) % 4],
+		yourName: players[offset % 4],
+		turn: t,
+	});
 	tree.addChild(st);
 	states.push(st);
+
+	tree.position.set(APP.screen.width / 2, APP.screen.height / 2);
+
+	tree.pivot.set(tree.width / 2, tree.height / 2);
+
+	setTurn(TURN);
 }
 
 server.onmessage = (data) => {
