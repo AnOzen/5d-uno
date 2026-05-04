@@ -1,10 +1,9 @@
 // TODO: Pixi Client
 
 import { Assets, Container, Graphics, Text, Texture, Ticker } from "pixi.js";
-import { ButtonContainer, Input, List } from "@pixi/ui";
+import { ButtonContainer, List } from "@pixi/ui";
 import State from "./util/state";
 import Card from "./util/card";
-import { ATLAS } from "./util/atlas";
 import TTF from "./res/font.ttf";
 import { APP } from "./index";
 import "@pixi/layout";
@@ -25,8 +24,6 @@ export let offset: number;
 let ready: boolean = false;
 
 let tree = new Container();
-
-export const CARDS: Record<string, Texture> = await Assets.load(ATLAS);
 
 await Assets.load({
 	src: TTF,
@@ -53,7 +50,7 @@ export function setChosen(coords: [number, number], card: Card, index: number) {
 	CHOSEN = [coords, card, index];
 	states.forEach((state) => {
 		if (state.coords == coords) {
-			state.chooseCard(card.type);
+			state.chooseCard(index);
 		} else {
 			state.resetCards();
 		}
@@ -478,76 +475,90 @@ server.onmessage = (data) => {
 };
 
 export async function init() {
-	let form = new Container();
-
-	let user = new Input({
-		bg: new Graphics().rect(0, 0, 500, 100).fill(0x789abc).stroke({
-			width: 5,
-			alignment: 1,
-			color: 0xdddddd,
-		}),
-		align: "center",
-		textStyle: {
-			fontFamily: "Arimo",
-			fontSize: 30,
+	createGame();
+	players = ["1", "2", "3", "4"];
+	offset = 0;
+	addState({
+		coords: [0, 0],
+		hands: {
+			1: [1, 1, 3, 4, 5, 6, 7],
+			2: [1, 2, 3, 4, 5, 6, 7],
+			3: [1, 2, 3, 4, 5, 6, 7],
+			4: [1, 2, 3, 4, 5, 6, 7],
 		},
-		placeholder: "Username",
+		middle: 2,
+		turn: 0,
 	});
-	form.addChild(user);
+	// let form = new Container();
 
-	let game = new Input({
-		bg: new Graphics().rect(0, 0, 500, 100).fill(0x789abc).stroke({
-			width: 5,
-			alignment: 1,
-			color: 0xdddddd,
-		}),
-		align: "center",
-		textStyle: {
-			fontFamily: "Arimo",
-			fontSize: 30,
-		},
-		placeholder: "Game Room",
-	});
+	// let user = new Input({
+	// 	bg: new Graphics().rect(0, 0, 500, 100).fill(0x789abc).stroke({
+	// 		width: 5,
+	// 		alignment: 1,
+	// 		color: 0xdddddd,
+	// 	}),
+	// 	align: "center",
+	// 	textStyle: {
+	// 		fontFamily: "Arimo",
+	// 		fontSize: 30,
+	// 	},
+	// 	placeholder: "Username",
+	// });
+	// form.addChild(user);
 
-	game.y = 110;
-	form.addChild(game);
+	// let game = new Input({
+	// 	bg: new Graphics().rect(0, 0, 500, 100).fill(0x789abc).stroke({
+	// 		width: 5,
+	// 		alignment: 1,
+	// 		color: 0xdddddd,
+	// 	}),
+	// 	align: "center",
+	// 	textStyle: {
+	// 		fontFamily: "Arimo",
+	// 		fontSize: 30,
+	// 	},
+	// 	placeholder: "Game Room",
+	// });
 
-	let join = new ButtonContainer(
-		new Graphics().rect(0, 0, 150, 100).fill(0x789abc).stroke({
-			width: 5,
-			color: 0xdddddd,
-			alignment: 1,
-		}),
-	);
-	let t = new Text({
-		text: "Join",
-		style: {
-			fontFamily: "Arimo",
-			fontSize: 30,
-		},
-	});
-	t.pivot.set(t.width / 2, t.height / 2);
-	t.position.set(join.width / 2, join.height / 2);
-	join.addChild(t);
+	// game.y = 110;
+	// form.addChild(game);
 
-	join.pivot.x = join.width / 2;
-	join.y = 220;
-	join.x = form.width / 2;
+	// let join = new ButtonContainer(
+	// 	new Graphics().rect(0, 0, 150, 100).fill(0x789abc).stroke({
+	// 		width: 5,
+	// 		color: 0xdddddd,
+	// 		alignment: 1,
+	// 	}),
+	// );
+	// let t = new Text({
+	// 	text: "Join",
+	// 	style: {
+	// 		fontFamily: "Arimo",
+	// 		fontSize: 30,
+	// 	},
+	// });
+	// t.pivot.set(t.width / 2, t.height / 2);
+	// t.position.set(join.width / 2, join.height / 2);
+	// join.addChild(t);
 
-	join.onPress.connect(() => {
-		if (user.value.trim() == "" || game.value.trim() == "") return;
-		USER = user.value;
-		GAME = game.value;
-		server.send(
-			JSON.stringify({ req: "gamejoin", username: USER, game: GAME }),
-		);
-		lobby();
-	});
+	// join.pivot.x = join.width / 2;
+	// join.y = 220;
+	// join.x = form.width / 2;
 
-	form.addChild(join);
+	// join.onPress.connect(() => {
+	// 	if (user.value.trim() == "" || game.value.trim() == "") return;
+	// 	USER = user.value;
+	// 	GAME = game.value;
+	// 	server.send(
+	// 		JSON.stringify({ req: "gamejoin", username: USER, game: GAME }),
+	// 	);
+	// 	lobby();
+	// });
 
-	form.pivot.set(form.width / 2, form.height / 2);
-	form.position.set(APP.screen.width / 2, APP.screen.height / 2);
+	// form.addChild(join);
 
-	APP.stage.addChild(form);
+	// form.pivot.set(form.width / 2, form.height / 2);
+	// form.position.set(APP.screen.width / 2, APP.screen.height / 2);
+
+	// APP.stage.addChild(form);
 }

@@ -133,7 +133,8 @@ export default class State extends Container {
 
 		this.ptxts = [text4, text, text3, text2];
 		this.ptxts = this.ptxts.filter((text) => !(text.text.length == 0));
-		this.ptxts[mod(meta.turn - offset, this.ptxts.length)].style.fill = "#ff0000";
+		this.ptxts[mod(meta.turn - offset, this.ptxts.length)].style.fill =
+			"#ff0000";
 		this.ptxts[mod(meta.turn - offset, this.ptxts.length)].style.stroke = {
 			width: 7,
 			color: "#ffffff",
@@ -176,9 +177,9 @@ export default class State extends Container {
 		);
 	}
 
-	chooseCard(type: number) {
-		this.hand.forEach((card) => {
-			if (card.type == type) {
+	chooseCard(index: number) {
+		this.hand.forEach((card, ind) => {
+			if (ind == index) {
 				card.chosen = !card.chosen;
 			} else {
 				card.chosen = false;
